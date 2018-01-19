@@ -212,7 +212,7 @@ static UARCTEventEmitter *sharedEventEmitter_;
         [pushBody setValue:extras forKey:@"extras"];
     }
 
-    if (@available(iOS 10.0, *)) {
+    if (content && content.notification && content.notification.request && content.notification.request.identifier) {
         NSString *identifier = content.notification.request.identifier;
         [pushBody setValue:identifier forKey:@"notificationId"];
     }

@@ -472,42 +472,5 @@ RCT_EXPORT_METHOD(setAutoLaunchDefaultMessageCenter:(BOOL)enabled) {
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-RCT_EXPORT_METHOD(clearNotifications) {
-    if (@available(iOS 10.0, *)) {
-        [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-    }
-}
-
-RCT_EXPORT_METHOD(clearNotification:(NSString *)identifier) {
-    if (@available(iOS 10.0, *)) {
-        if (identifier) {
-            [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[identifier]];
-        }
-    }
-}
-
-RCT_REMAP_METHOD(getActiveNotifications,
-                 getNotifications_resolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject) {
-
-    if (@available(iOS 10.0, *)) {
-        [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-
-            NSMutableArray *result = [NSMutableArray array];
-            for(UNNotification *unnotification in notifications) {
-                UANotificationContent *content = [UANotificationContent notificationWithUNNotification:unnotification];
-                [result addObject:[UARCTEventEmitter eventBodyForNotificationContent:content]];
-            }
-
-            resolve(result);
-        }];
-    } else {
-        NSError *error =  [NSError errorWithDomain:UARCTErrorDomain
-                                              code:0
-                                          userInfo:@{NSLocalizedDescriptionKey:@"Only available on iOS 10+"}];
-
-        reject(UARCTStatusUnavailable, @"Only available on iOS 10+", error);
-    }
-}
 @end
 
